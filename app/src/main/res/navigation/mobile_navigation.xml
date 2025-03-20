@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_meals">
+
+    <fragment
+        android:id="@+id/navigation_meals"
+        android:name="com.example.smartscale.ui.meals.MealsFragment"
+        android:label="@string/title_meals"
+        tools:layout="@layout/fragment_meals" />
+
+    <fragment
+        android:id="@+id/navigation_scale"
+        android:name="com.example.smartscale.ui.scale.ScaleFragment"
+        android:label="@string/title_scale"
+        tools:layout="@layout/fragment_scale" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.smartscale.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
+</navigation>
