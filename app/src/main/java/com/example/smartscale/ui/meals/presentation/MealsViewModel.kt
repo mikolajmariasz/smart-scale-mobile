@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.meals
+package com.example.smartscale.ui.meals.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

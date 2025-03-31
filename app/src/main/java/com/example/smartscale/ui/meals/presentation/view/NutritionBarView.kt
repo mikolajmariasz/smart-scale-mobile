@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.meals.view
+package com.example.smartscale.ui.meals.presentation.view
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -90,6 +90,38 @@ class NutritionBarView @JvmOverloads constructor(
         animator.start()
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val barHeight = 20f
+        val barMargin = 24f
+        val textHeight = labelTextPaint.textSize + valueTextPaint.textSize + 16f // marginesy
+        val totalHeight = barHeight + textHeight + barMargin * 2
+
+        val desiredHeight = totalHeight.toInt() + paddingTop + paddingBottom
+
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+
+        val finalHeight = when (heightMode) {
+            MeasureSpec.EXACTLY -> heightSize
+            MeasureSpec.AT_MOST -> minOf(desiredHeight, heightSize)
+            else -> desiredHeight
+        }
+
+        val barWidth = (MeasureSpec.getSize(widthMeasureSpec) * 0.8f).toInt()
+        val totalWidth = (3 * barWidth + 2 * barMargin).toInt()
+        val desiredWidth = totalWidth + paddingLeft + paddingRight
+
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+
+        val finalWidth = when (widthMode) {
+            MeasureSpec.EXACTLY -> widthSize
+            MeasureSpec.AT_MOST -> minOf(desiredWidth, widthSize)
+            else -> desiredWidth
+        }
+
+        setMeasuredDimension(finalWidth, finalHeight)
+    }
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -126,7 +158,7 @@ class NutritionBarView @JvmOverloads constructor(
             label,
             startX + barWidth / 2,
             startY - barHeight - 8f,
-            labelTextPaint
+            labelTextPaint,
         )
 
         canvas.drawRoundRect(
