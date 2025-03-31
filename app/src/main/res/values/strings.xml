@@ -10,4 +10,5 @@
     <string name="carbs_label">Carbs</string>
     <string name="protein_label">Protein</string>
     <string name="fat_label">Fat</string>
+    <string name="add_meal">Add meal</string>
 </resources>
