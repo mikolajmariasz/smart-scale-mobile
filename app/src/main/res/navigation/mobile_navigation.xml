@@ -21,5 +21,50 @@
         android:id="@+id/navigation_profile"
         android:name="com.example.smartscale.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_loggedInFragment"
+            app:destination="@id/loggedInFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.smartscale.ui.profile.ProfileFragment"
+        android:label="Profil">
+
+        <!-- AKCJA profil -> rejestracja -->
+        <action
+            android:id="@+id/action_profileFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_loggedInFragment"
+            app:destination="@id/loggedInFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.smartscale.ui.profile.RegisterFragment"
+        android:label="Rejestracja">
+
+        <!-- AKCJA rejestracja -> profil (jeśli potrzebna) -->
+        <action
+            android:id="@+id/action_registerFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/loggedInFragment"
+        android:name="com.example.smartscale.ui.profile.LoggedInFragment"
+        android:label="Ekran po zalogowaniu" >
+
+        <!-- akacja powrotu do okna logowania, jeśli chcesz manualnie -->
+        <action
+            android:id="@+id/action_loggedInFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+
+
 </navigation>
