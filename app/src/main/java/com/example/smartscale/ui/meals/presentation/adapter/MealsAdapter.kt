@@ -9,7 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.smartscale.R
 import com.example.smartscale.ui.meals.domain.model.Meal
 
-class MealsAdapter(private val meals: List<Meal>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MealsAdapter(
+    private val meals: List<Meal>,
+    private val onAddMealClick: () -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
 
     private companion object {
         const val TYPE_MEAL = 0
@@ -62,6 +66,9 @@ class MealsAdapter(private val meals: List<Meal>) : RecyclerView.Adapter<Recycle
                 holder.mealFat.text = "${meal.fat}g"
             }
             is AddMealViewHolder -> {
+                holder.addButton.setOnClickListener {
+                    onAddMealClick()
+                }
             }
         }
     }

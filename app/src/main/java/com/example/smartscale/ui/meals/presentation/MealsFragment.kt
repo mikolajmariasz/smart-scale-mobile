@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.smartscale.R
 import com.example.smartscale.databinding.FragmentMealsBinding
 import com.example.smartscale.decorations.FadeEdgeDecoration
 import com.example.smartscale.ui.meals.domain.model.Meal
@@ -60,7 +62,9 @@ class MealsFragment : Fragment() {
             Meal("Dinner", "12.05 19:45", "🥗", 400, 30, 25, 15)
         )
 
-        mealsAdapter = MealsAdapter(mealsList)
+        mealsAdapter = MealsAdapter(mealsList) {
+            navigateToAddMeal()
+        }
         binding.mealsList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = mealsAdapter
@@ -68,6 +72,12 @@ class MealsFragment : Fragment() {
         }
 
     }
+
+    private fun navigateToAddMeal() {
+        val navController = findNavController()
+        navController.navigate(R.id.action_meals_to_add_meal)
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

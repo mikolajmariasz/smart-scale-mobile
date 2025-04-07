@@ -9,7 +9,12 @@
         android:id="@+id/navigation_meals"
         android:name="com.example.smartscale.ui.meals.presentation.MealsFragment"
         android:label="@string/title_meals"
-        tools:layout="@layout/fragment_meals" />
+        tools:layout="@layout/fragment_meals">
+
+        <action
+            android:id="@+id/action_meals_to_add_meal"
+            app:destination="@id/navigation_add_meal" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_scale"
@@ -22,4 +27,10 @@
         android:name="com.example.smartscale.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/navigation_add_meal"
+        android:name="com.example.smartscale.ui.meals.presentation.AddMealFragment"
+        android:label="Add Meal"
+        tools:layout="@layout/fragment_add_meal" />
 </navigation>
