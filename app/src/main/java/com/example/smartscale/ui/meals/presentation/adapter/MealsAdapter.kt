@@ -10,10 +10,9 @@ import com.example.smartscale.R
 import com.example.smartscale.ui.meals.domain.model.Meal
 
 class MealsAdapter(
-    private val meals: List<Meal>,
+    private var meals: List<Meal>,
     private val onAddMealClick: () -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
 
     private companion object {
         const val TYPE_MEAL = 0
@@ -60,10 +59,10 @@ class MealsAdapter(
                 holder.mealName.text = meal.name
                 holder.mealTime.text = meal.time
                 holder.mealEmoji.text = meal.emoji
-                holder.mealCalories.text = meal.calories.toString()
-                holder.mealCarbs.text = "${meal.carbs}g"
-                holder.mealProtein.text = "${meal.protein}g"
-                holder.mealFat.text = "${meal.fat}g"
+                holder.mealCalories.text = "${meal.calories}"
+                holder.mealCarbs.text = "${meal.carbs}"
+                holder.mealProtein.text = "${meal.protein}"
+                holder.mealFat.text = "${meal.fat}"
             }
             is AddMealViewHolder -> {
                 holder.addButton.setOnClickListener {
@@ -74,4 +73,9 @@ class MealsAdapter(
     }
 
     override fun getItemCount() = meals.size + 1
+
+    fun updateMeals(newMeals: List<Meal>) {
+        meals = newMeals.toList()
+        notifyDataSetChanged()
+    }
 }

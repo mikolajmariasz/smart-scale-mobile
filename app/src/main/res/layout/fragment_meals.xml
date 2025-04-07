@@ -9,6 +9,7 @@
 
     <!-- Header with date and calendar icon -->
     <include
+        android:id="@+id/headerDateCalendar"
         layout="@layout/header_date_calendar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
