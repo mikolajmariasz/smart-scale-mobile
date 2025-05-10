@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_meals"
-        android:name="com.example.smartscale.ui.meals.presentation.MealsFragment"
+        android:name="com.example.smartscale.ui.meals.presentation.fragment.MealsFragment"
         android:label="@string/title_meals"
         tools:layout="@layout/fragment_meals">
 
@@ -73,7 +73,7 @@
 
     <fragment
         android:id="@+id/navigation_add_meal"
-        android:name="com.example.smartscale.ui.meals.presentation.AddMealFragment"
+        android:name="com.example.smartscale.ui.meals.presentation.fragment.AddMealFragment"
         android:label="Add Meal"
         tools:layout="@layout/fragment_add_meal" />
 </navigation>

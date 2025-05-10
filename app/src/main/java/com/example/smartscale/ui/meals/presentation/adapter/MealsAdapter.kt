@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smartscale.R
-import com.example.smartscale.ui.meals.domain.model.Meal
+import com.example.smartscale.domain.model.Meal
 
 class MealsAdapter(
     private var meals: List<Meal>,
@@ -33,36 +33,31 @@ class MealsAdapter(
         val addButton: ImageView = itemView.findViewById(R.id.addButton)
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return if (position < meals.size) TYPE_MEAL else TYPE_ADD_MEAL
-    }
+    override fun getItemViewType(position: Int) =
+        if (position < meals.size) TYPE_MEAL else TYPE_ADD_MEAL
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            TYPE_MEAL -> {
-                val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_meal, parent, false)
-                MealViewHolder(view)
-            }
-            else -> {
-                val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_add_meal, parent, false)
-                AddMealViewHolder(view)
-            }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+        if (viewType == TYPE_MEAL) {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_meal, parent, false)
+            MealViewHolder(view)
+        } else {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_add, parent, false)
+            AddMealViewHolder(view)
         }
-    }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is MealViewHolder -> {
                 val meal = meals[position]
-                holder.mealName.text = meal.name
-                holder.mealTime.text = meal.time
-                holder.mealEmoji.text = meal.emoji
-                holder.mealCalories.text = "${meal.calories}"
-                holder.mealCarbs.text = "${meal.carbs}"
-                holder.mealProtein.text = "${meal.protein}"
-                holder.mealFat.text = "${meal.fat}"
+                holder.mealName.text     = meal.name
+                holder.mealTime.text     = meal.time
+                holder.mealEmoji.text    = meal.emoji
+                holder.mealCalories.text = String.format("%.1f", meal.calories)
+                holder.mealCarbs.text    = String.format("%.1f", meal.carbs)
+                holder.mealProtein.text  = String.format("%.1f", meal.protein)
+                holder.mealFat.text      = String.format("%.1f", meal.fat)
             }
             is AddMealViewHolder -> {
                 holder.addButton.setOnClickListener {

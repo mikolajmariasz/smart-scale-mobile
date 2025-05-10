@@ -16,129 +16,128 @@ class NutritionBarView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private var carbsProgress = 0f
-    private var proteinProgress = 0f
-    private var fatProgress = 0f
+    private var carbsProgress      = 0f
+    private var proteinProgress    = 0f
+    private var fatProgress        = 0f
 
-    private var animatedCarbsProgress = 0f
-    private var animatedProteinProgress = 0f
-    private var animatedFatProgress = 0f
+    private var animatedCarbsProg   = 0f
+    private var animatedProteinProg = 0f
+    private var animatedFatProg     = 0f
 
-    private var carbsText = "0/0 g"
-    private var proteinText = "0/0 g"
-    private var fatText = "0/0 g"
+    private var carbsText    = "0/0 g"
+    private var proteinText  = "0/0 g"
+    private var fatText      = "0/0 g"
 
     private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.white)
         style = Paint.Style.FILL
     }
-
     private val carbsPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.green)
         style = Paint.Style.FILL
     }
-
     private val proteinPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.green)
         style = Paint.Style.FILL
     }
-
     private val fatPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.green)
         style = Paint.Style.FILL
     }
-
     private val labelTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.green)
         textSize = 48f
         textAlign = Paint.Align.CENTER
         typeface = Typeface.DEFAULT_BOLD
     }
-
     private val valueTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.green)
-        textSize = 44f
+        textSize = 36f
         textAlign = Paint.Align.CENTER
         typeface = Typeface.DEFAULT
     }
 
     private val animator = ValueAnimator.ofFloat(0f, 1f).apply {
         duration = 500
-        addUpdateListener {
-            animatedCarbsProgress = carbsProgress * (it.animatedValue as Float)
-            animatedProteinProgress = proteinProgress * (it.animatedValue as Float)
-            animatedFatProgress = fatProgress * (it.animatedValue as Float)
+        addUpdateListener { anim ->
+            val frac = anim.animatedValue as Float
+            animatedCarbsProg   = carbsProgress   * frac
+            animatedProteinProg = proteinProgress * frac
+            animatedFatProg     = fatProgress     * frac
             invalidate()
         }
     }
 
-    fun setCarbsProgress(current: Int, total: Int) {
-        this.carbsProgress = (current.toFloat() / total).coerceIn(0f, 1f)
-        this.carbsText = "$current/$total g"
+    /**
+     * @param current ilość gramów (Float)
+     * @param total   cel w gramach (Float)
+     */
+    fun setCarbsProgress(current: Float, total: Float) {
+        carbsProgress = (current / total).coerceIn(0f, 1f)
+        carbsText     = String.format("%.1f/%.1f g", current, total)
         animator.start()
     }
 
-    fun setProteinProgress(current: Int, total: Int) {
-        this.proteinProgress = (current.toFloat() / total).coerceIn(0f, 1f)
-        this.proteinText = "$current/$total g"
+    fun setProteinProgress(current: Float, total: Float) {
+        proteinProgress = (current / total).coerceIn(0f, 1f)
+        proteinText     = String.format("%.1f/%.1f g", current, total)
         animator.start()
     }
 
-    fun setFatProgress(current: Int, total: Int) {
-        this.fatProgress = (current.toFloat() / total).coerceIn(0f, 1f)
-        this.fatText = "$current/$total g"
+    fun setFatProgress(current: Float, total: Float) {
+        fatProgress = (current / total).coerceIn(0f, 1f)
+        fatText      = String.format("%.1f/%.1f g", current, total)
         animator.start()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val barHeight = 20f
-        val barMargin = 24f
-        val textHeight = labelTextPaint.textSize + valueTextPaint.textSize + 16f // marginesy
+        val barHeight   = 20f
+        val barMargin   = 24f
+        val textHeight  = labelTextPaint.textSize + valueTextPaint.textSize + 16f
         val totalHeight = barHeight + textHeight + barMargin * 2
 
-        val desiredHeight = totalHeight.toInt() + paddingTop + paddingBottom
+        val desiredH = totalHeight.toInt() + paddingTop + paddingBottom
+        val hMode    = MeasureSpec.getMode(heightMeasureSpec)
+        val hSize    = MeasureSpec.getSize(heightMeasureSpec)
+        val finalH   = if (hMode == MeasureSpec.EXACTLY) hSize
+        else if (hMode == MeasureSpec.AT_MOST) minOf(desiredH, hSize)
+        else desiredH
 
-        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
-        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+        val barWidth    = (MeasureSpec.getSize(widthMeasureSpec) * 0.8f).toInt()
+        val totalWidth  = (3 * barWidth + 2 * barMargin).toInt()
+        val desiredW    = totalWidth + paddingLeft + paddingRight
+        val wMode       = MeasureSpec.getMode(widthMeasureSpec)
+        val wSize       = MeasureSpec.getSize(widthMeasureSpec)
+        val finalW      = if (wMode == MeasureSpec.EXACTLY) wSize
+        else if (wMode == MeasureSpec.AT_MOST) minOf(desiredW, wSize)
+        else desiredW
 
-        val finalHeight = when (heightMode) {
-            MeasureSpec.EXACTLY -> heightSize
-            MeasureSpec.AT_MOST -> minOf(desiredHeight, heightSize)
-            else -> desiredHeight
-        }
-
-        val barWidth = (MeasureSpec.getSize(widthMeasureSpec) * 0.8f).toInt()
-        val totalWidth = (3 * barWidth + 2 * barMargin).toInt()
-        val desiredWidth = totalWidth + paddingLeft + paddingRight
-
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-
-        val finalWidth = when (widthMode) {
-            MeasureSpec.EXACTLY -> widthSize
-            MeasureSpec.AT_MOST -> minOf(desiredWidth, widthSize)
-            else -> desiredWidth
-        }
-
-        setMeasuredDimension(finalWidth, finalHeight)
+        setMeasuredDimension(finalW, finalH)
     }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         val barHeight = 20f
         val barMargin = 36f
-        val barWidth = width * 0.2f
-        val startY = barMargin + labelTextPaint.textSize + 8f // Space for the label
+        val barWidth  = width * 0.2f
+        val startY    = barMargin + labelTextPaint.textSize + 8f
+        val totalW    = 3 * barWidth + 2 * barMargin
+        val startX    = (width - totalW) / 2
 
-        val totalWidth = 3 * barWidth + 2 * barMargin
-
-        val startX = (width - totalWidth) / 2
-
-        drawProgressBar(canvas, startX, startY, barWidth, barHeight, animatedCarbsProgress, "Carbs", carbsText, carbsPaint)
-
-        drawProgressBar(canvas, startX + barWidth + barMargin, startY, barWidth, barHeight, animatedProteinProgress, "Protein", proteinText, proteinPaint)
-
-        drawProgressBar(canvas, startX + 2 * (barWidth + barMargin), startY, barWidth, barHeight, animatedFatProgress, "Fat", fatText, fatPaint)
+        // rysowanie dla każdego makro
+        drawProgressBar(
+            canvas, startX, startY, barWidth, barHeight,
+            animatedCarbsProg, "Carbs",   carbsText,   carbsPaint
+        )
+        drawProgressBar(
+            canvas, startX + barWidth + barMargin, startY, barWidth, barHeight,
+            animatedProteinProg, "Protein", proteinText, proteinPaint
+        )
+        drawProgressBar(
+            canvas, startX + 2*(barWidth + barMargin), startY, barWidth, barHeight,
+            animatedFatProg, "Fat", fatText, fatPaint
+        )
     }
 
     private fun drawProgressBar(
@@ -150,36 +149,21 @@ class NutritionBarView @JvmOverloads constructor(
         progress: Float,
         label: String,
         valueText: String,
-        progressPaint: Paint
+        paintProg: Paint
     ) {
-        val cornerRadius = 10f
-
-        canvas.drawText(
-            label,
-            startX + barWidth / 2,
-            startY - barHeight - 8f,
-            labelTextPaint,
-        )
-
-        canvas.drawRoundRect(
-            startX, startY,
-            startX + barWidth, startY + barHeight,
-            cornerRadius, cornerRadius,
-            barPaint
-        )
-
-        canvas.drawRoundRect(
-            startX, startY,
-            startX + barWidth * progress, startY + barHeight,
-            cornerRadius, cornerRadius,
-            progressPaint
-        )
-
-        canvas.drawText(
-            valueText,
-            startX + barWidth / 2,
+        val radius = 10f
+        // label
+        canvas.drawText(label, startX + barWidth/2, startY - barHeight - 8f, labelTextPaint)
+        // tło paska
+        canvas.drawRoundRect(startX, startY, startX + barWidth, startY + barHeight,
+            radius, radius, barPaint)
+        // wypełnienie
+        canvas.drawRoundRect(startX, startY, startX + barWidth * progress, startY + barHeight,
+            radius, radius, paintProg)
+        // tekst wartości
+        canvas.drawText(valueText,
+            startX + barWidth/2,
             startY + barHeight + valueTextPaint.textSize + 8f,
-            valueTextPaint
-        )
+            valueTextPaint)
     }
 }

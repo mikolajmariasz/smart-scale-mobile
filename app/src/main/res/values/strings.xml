@@ -13,9 +13,17 @@
 
     <!-- Labels for add meal -->
     <string name="add_meal">Add meal</string>
-    <string name="meal_name">Meal name</string>
     <string name="date_time">Date and time</string>
 
     <!-- Universal strings -->
     <string name="save">Save</string>
+    <string name="add_ingredient">Add ingredient</string>
+    <string name="add">Add</string>
+    <string name="carbs_per_100g">Carbs per 100g</string>
+    <string name="fat_per_100g">Fat per 100g</string>
+    <string name="protein_per_100g">Protein per 100g</string>
+    <string name="calories_per_100g">Calories per 100g</string>
+    <string name="weight_g">Weight (g)</string>
+    <string name="name">Name</string>
+    <string name="ingredients">Ingredients</string>
 </resources>

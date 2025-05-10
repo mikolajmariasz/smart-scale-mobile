@@ -3,11 +3,11 @@ package com.example.smartscale.ui.meals.presentation.view
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
-import androidx.core.content.ContextCompat
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.example.smartscale.R
 
 class CircularProgressBar @JvmOverloads constructor(
@@ -26,14 +26,12 @@ class CircularProgressBar @JvmOverloads constructor(
         strokeWidth = 30f
         strokeCap = Paint.Cap.ROUND
     }
-
     private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.white)
         style = Paint.Style.STROKE
         strokeWidth = 30f
         strokeCap = Paint.Cap.ROUND
     }
-
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.green)
         textSize = 64f
@@ -50,64 +48,54 @@ class CircularProgressBar @JvmOverloads constructor(
     }
 
     /**
-     * Sets the progress of the circular progress bar.
+     * Ustawia procentowy postęp (0f..1f) i animuje.
      */
     fun setProgress(targetProgress: Float) {
-        this.progress = targetProgress.coerceIn(0f, 1f)
+        progress = targetProgress.coerceIn(0f, 1f)
         animator.setFloatValues(animatedProgress, progress)
         animator.start()
     }
 
     /**
-     * Sets the calories text of the circular progress bar.
+     * Ustawia dowolny tekst wyświetlany w środku (np. "2000/2800 kcal").
      */
     fun setCaloriesText(text: String) {
         caloriesText = text
         invalidate()
     }
 
+    /**
+     * Wygodna metoda: podajesz spożyte i docelowe kcal, a klasa sama liczy `progress`
+     * i ustawia odpowiedni tekst.
+     */
+    fun setCalories(consumed: Float, goal: Float) {
+        val safeGoal = goal.coerceAtLeast(1f)
+        val pct = (consumed / safeGoal).coerceIn(0f, 1f)
+        setProgress(pct)
+
+        // formatowanie liczb: jeśli całkowite, bez miejsc po przecinku, inaczej z jedną
+        caloriesText = if (consumed % 1f == 0f && goal % 1f == 0f) {
+            String.format("%.0f/%.0f kcal", consumed, goal)
+        } else {
+            String.format("%.1f/%.1f kcal", consumed, goal)
+        }
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        val radius = (width * 0.8f / 2f)
+        val cx = width / 2f
+        val cy = height / 2f
 
-        val radius = (width / 2 * 0.8).toFloat()
+        // tło koła
+        canvas.drawArc(cx - radius, cy - radius, cx + radius, cy + radius,
+            -90f, 360f, false, backgroundPaint)
 
-        val centerX = width / 2f
-        val centerY = height / 2f
+        // wypełniony łuk
+        canvas.drawArc(cx - radius, cy - radius, cx + radius, cy + radius,
+            -90f, 360 * animatedProgress, false, paint)
 
-        /**
-         * Draw the background of the circular progress bar
-         */
-        canvas.drawArc(
-            centerX - radius, centerY - radius,
-            centerX + radius, centerY + radius,
-            -90f,
-            360f,
-            false,
-            backgroundPaint
-        )
-
-        val sweepAngle = 360 * animatedProgress
-
-        /**
-         * Draw the circular progress bar
-         */
-        canvas.drawArc(
-            centerX - radius, centerY - radius,
-            centerX + radius, centerY + radius,
-            -90f,
-            sweepAngle,
-            false,
-            paint
-        )
-
-        /**
-         * Draw the calories text
-         */
-        canvas.drawText(
-            caloriesText,
-            centerX,
-            centerY + textPaint.textSize / 3,
-            textPaint
-        )
+        // tekst w środku
+        canvas.drawText(caloriesText, cx, cy + textPaint.textSize/3, textPaint)
     }
 }
