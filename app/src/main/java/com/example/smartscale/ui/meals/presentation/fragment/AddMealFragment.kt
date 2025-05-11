@@ -1,18 +1,17 @@
 package com.example.smartscale.ui.meals.presentation.fragment
 
-import android.app.AlertDialog
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.os.Bundle
 import androidx.navigation.fragment.findNavController
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.app.AlertDialog
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.smartscale.R
+import com.example.smartscale.data.remote.model.Product
 import com.example.smartscale.databinding.FragmentAddMealBinding
 import com.example.smartscale.domain.model.Ingredient
 import com.example.smartscale.ui.meals.presentation.adapter.IngredientsAdapter
@@ -43,6 +42,43 @@ class AddMealFragment : Fragment() {
         setupDateTimePicker()
         setupEmojiPicker()
         setupIngredientsList()
+
+        findNavController().currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<Ingredient>("newIngredient")
+            ?.observe(viewLifecycleOwner) { newIng ->
+                ingredients.add(newIng)
+                ingredientsAdapter.updateList(ingredients)
+                findNavController().currentBackStackEntry
+                    ?.savedStateHandle
+                    ?.remove<Ingredient>("newIngredient")
+            }
+
+        findNavController().currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<Product>("selectedProduct")
+            ?.observe(viewLifecycleOwner) { prod ->
+                val w = findNavController().currentBackStackEntry
+                    ?.savedStateHandle
+                    ?.get<Float>("selectedWeight") ?: 0f
+                val fromApi = Ingredient(
+                    name  = prod.productName.orEmpty(),
+                    weight = w,
+                    caloriesPer100g = prod.nutriments?.energyKcal100g ?: 0f,
+                    carbsPer100g = prod.nutriments?.carbohydrates100g ?: 0f,
+                    proteinPer100g = prod.nutriments?.proteins100g ?: 0f,
+                    fatPer100g = prod.nutriments?.fat100g ?: 0f
+                )
+                ingredients.add(fromApi)
+                ingredientsAdapter.updateList(ingredients)
+                findNavController().currentBackStackEntry
+                    ?.savedStateHandle
+                    ?.remove<Product>("selectedProduct")
+                findNavController().currentBackStackEntry
+                    ?.savedStateHandle
+                    ?.remove<Float>("selectedWeight")
+            }
+
         binding.saveMealButton.setOnClickListener { saveMeal() }
     }
 
@@ -67,7 +103,7 @@ class AddMealFragment : Fragment() {
 
     private fun setupIngredientsList() {
         ingredientsAdapter = IngredientsAdapter(ingredients) {
-            showAddIngredientDialog()
+            findNavController().navigate(R.id.action_addMeal_to_searchProduct)
         }
         binding.ingredientsList.apply {
             layoutManager = LinearLayoutManager(context)
@@ -75,37 +111,10 @@ class AddMealFragment : Fragment() {
         }
     }
 
-    private fun showAddIngredientDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_add_ingredient, null)
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.add_ingredient)
-            .setView(dialogView)
-            .setPositiveButton(R.string.add) { _, _ ->
-                val name    = dialogView.findViewById<EditText>(R.id.inputName).text.toString()
-                val weight  = dialogView.findViewById<EditText>(R.id.inputWeight)
-                    .text.toString().toFloatOrNull() ?: 0f
-                val cal100  = dialogView.findViewById<EditText>(R.id.inputCal100)
-                    .text.toString().toFloatOrNull() ?: 0f
-                val prot100 = dialogView.findViewById<EditText>(R.id.inputProt100)
-                    .text.toString().toFloatOrNull() ?: 0f
-                val fat100  = dialogView.findViewById<EditText>(R.id.inputFat100)
-                    .text.toString().toFloatOrNull() ?: 0f
-                val carbs100= dialogView.findViewById<EditText>(R.id.inputCarbs100)
-                    .text.toString().toFloatOrNull() ?: 0f
-
-                ingredients.add(
-                    Ingredient(name, weight, cal100, carbs100, prot100, fat100)
-                )
-                ingredientsAdapter.updateList(ingredients)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-    }
-
     private fun saveMeal() {
-        val name = binding.editMealName.text.toString().ifBlank { "Meal" }
+        val name      = binding.editMealName.text.toString().ifBlank { "Meal" }
         val timeStamp = calendar.timeInMillis
-        val emoji = binding.emojiPicker.text.toString()
+        val emoji     = binding.emojiPicker.text.toString()
         viewModel.addMeal(name, timeStamp, emoji, ingredients) {
             findNavController().popBackStack()
         }

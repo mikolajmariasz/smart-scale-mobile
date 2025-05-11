@@ -17,7 +17,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_centerInParent="true"
-            android:src="@drawable/ic_add_black_24dp"
+            android:src="@drawable/ic_add_circle_black_24dp"
             app:tint="#666666" />
 
     </RelativeLayout>

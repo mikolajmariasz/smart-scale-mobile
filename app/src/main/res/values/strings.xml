@@ -26,4 +26,9 @@
     <string name="weight_g">Weight (g)</string>
     <string name="name">Name</string>
     <string name="ingredients">Ingredients</string>
+    <string name="add_custom_product">Add custom product</string>
+    <string name="search_products">Search product</string>
+    <string name="enter_weight">Enter weight</string>
+    <string name="ok">OK</string>
+    <string name="product_image">Product image</string>
 </resources>

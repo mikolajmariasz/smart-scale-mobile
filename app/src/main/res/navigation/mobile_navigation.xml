@@ -1,27 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app   ="http://schemas.android.com/apk/res-auto"
+    xmlns:tools ="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_meals">
+    app:startDestination="@id/navigation_meals">
 
+    <!-- Meals list screen -->
     <fragment
         android:id="@+id/navigation_meals"
         android:name="com.example.smartscale.ui.meals.presentation.fragment.MealsFragment"
         android:label="@string/title_meals"
         tools:layout="@layout/fragment_meals">
-
         <action
             android:id="@+id/action_meals_to_add_meal"
             app:destination="@id/navigation_add_meal" />
     </fragment>
 
+    <!-- Add Meal screen -->
+    <fragment
+        android:id="@+id/navigation_add_meal"
+        android:name="com.example.smartscale.ui.meals.presentation.fragment.AddMealFragment"
+        tools:layout="@layout/fragment_add_meal">
+        <action
+            android:id="@+id/action_addMeal_to_searchProduct"
+            app:destination="@id/navigation_search_product" />
+    </fragment>
+
+    <!-- Search Product screen -->
+    <fragment
+        android:id="@+id/navigation_search_product"
+        android:name="com.example.smartscale.ui.meals.presentation.fragment.SearchProductFragment"
+        tools:layout="@layout/fragment_search_product" />
+
+    <!-- Scale screen -->
     <fragment
         android:id="@+id/navigation_scale"
         android:name="com.example.smartscale.ui.scale.ScaleFragment"
         android:label="@string/title_scale"
         tools:layout="@layout/fragment_scale" />
 
+    <!-- Profile screens -->
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.example.smartscale.ui.profile.ProfileFragment"
@@ -36,44 +55,21 @@
     </fragment>
 
     <fragment
-        android:id="@+id/profileFragment"
-        android:name="com.example.smartscale.ui.profile.ProfileFragment"
-        android:label="Profil">
-
-        <!-- AKCJA profil -> rejestracja -->
-        <action
-            android:id="@+id/action_profileFragment_to_registerFragment"
-            app:destination="@id/registerFragment" />
-        <action
-            android:id="@+id/action_profileFragment_to_loggedInFragment"
-            app:destination="@id/loggedInFragment" />
-    </fragment>
-
-    <fragment
         android:id="@+id/registerFragment"
         android:name="com.example.smartscale.ui.profile.RegisterFragment"
-        android:label="Rejestracja">
-
-        <!-- AKCJA rejestracja -> profil (jeśli potrzebna) -->
+        tools:layout="@layout/fragment_register">
         <action
             android:id="@+id/action_registerFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
+            app:destination="@id/navigation_profile" />
     </fragment>
 
     <fragment
         android:id="@+id/loggedInFragment"
         android:name="com.example.smartscale.ui.profile.LoggedInFragment"
-        android:label="Ekran po zalogowaniu" >
-
-        <!-- akacja powrotu do okna logowania, jeśli chcesz manualnie -->
+        tools:layout="@layout/fragment_logged_in">
         <action
             android:id="@+id/action_loggedInFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
+            app:destination="@id/navigation_profile" />
     </fragment>
 
-    <fragment
-        android:id="@+id/navigation_add_meal"
-        android:name="com.example.smartscale.ui.meals.presentation.fragment.AddMealFragment"
-        android:label="Add Meal"
-        tools:layout="@layout/fragment_add_meal" />
 </navigation>

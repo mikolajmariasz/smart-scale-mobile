@@ -1,5 +1,9 @@
 package com.example.smartscale.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Meal(
     val name: String,
     val time: String,
@@ -8,4 +12,4 @@ data class Meal(
     val carbs: Float,
     val protein: Float,
     val fat: Float
-)
+) : Parcelable {}

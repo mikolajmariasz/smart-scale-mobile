@@ -22,6 +22,10 @@ roomRuntime = "2.7.1"
 roomCommonJvm = "2.7.1"
 roomRuntimeAndroid = "2.7.1"
 room = "2.7.1"
+retrofit = "2.9.0"
+gsonConverter = "2.9.0"
+coroutinesAndroid = "1.6.4"
+glide = "4.14.2"
 
 [libraries]
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
@@ -46,7 +50,14 @@ androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", 
 androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
 androidx-room-ktx       = { module = "androidx.room:room-ktx",       version.ref = "room" }
 androidx-room-compiler  = { module = "androidx.room:room-compiler",  version.ref = "room" }
+retrofit                   = { module = "com.squareup.retrofit2:retrofit",               version.ref = "retrofit" }
+retrofit-converter-gson    = { module = "com.squareup.retrofit2:converter-gson",        version.ref = "gsonConverter" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutinesAndroid" }
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
 
