@@ -64,6 +64,11 @@ class MealsLocalRepository(
             )
         }
     }
+    suspend fun searchIngredients(query: String): List<Ingredient> {
+        return ingredientDao
+            .searchIngredientsByName(query)
+            .map { it.toDomain() }
+    }
 }
 
 private fun IngredientEntity.toDomain(): Ingredient =

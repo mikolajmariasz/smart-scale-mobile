@@ -12,6 +12,9 @@ interface IngredientDao {
     @Update
     suspend fun updateIngredient(ingredient: IngredientEntity): Int
 
+    @Query("SELECT * FROM ingredients WHERE name LIKE '%' || :query || '%'")
+    suspend fun searchIngredientsByName(query: String): List<IngredientEntity>
+
     @Query("SELECT * FROM ingredients WHERE mealLocalId = :mealId")
     suspend fun getIngredientsForMeal(mealId: String): List<IngredientEntity>
 

@@ -1,15 +1,29 @@
 package com.example.smartscale.ui.meals.presentation.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.*
+import com.example.smartscale.data.local.AppDatabase
+import com.example.smartscale.data.local.MealsLocalRepository
 import com.example.smartscale.data.remote.RetrofitClient
+import com.example.smartscale.data.remote.model.Nutriments
 import com.example.smartscale.data.remote.model.Product
 import com.example.smartscale.data.remote.model.SingleSearchResponse
 import com.example.smartscale.data.remote.model.SearchResponse
+import com.example.smartscale.domain.model.Ingredient
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
-class SearchProductViewModel : ViewModel() {
+class SearchProductViewModel(
+    application: Application
+) : AndroidViewModel(application)
+{
+
+    private val db = AppDatabase.getInstance(application)
+    private val localRepo = MealsLocalRepository(
+        db.mealDao(),
+        db.ingredientDao()
+    )
 
     private val _products   = MutableLiveData<List<Product>>(emptyList())
     val products: LiveData<List<Product>> = _products
@@ -24,16 +38,61 @@ class SearchProductViewModel : ViewModel() {
     private var currentPage = 1
     private var lastQuery   = ""
 
+    private fun Ingredient.toProduct(): Product {
+        return Product(
+            code         = null,
+            productName  = this.name,
+            imageUrl     = null,
+            nutriments   = Nutriments(
+                energyKcal100g   = this.caloriesPer100g,
+                proteins100g     = this.proteinPer100g,
+                carbohydrates100g= this.carbsPer100g,
+                fat100g          = this.fatPer100g
+            )
+        )
+    }
+
     fun onQueryChanged(query: String) {
         searchJob?.cancel()
         lastQuery = query.trim()
+
         if (lastQuery.isBlank()) {
             _products.value = emptyList()
+            _loading.value = false
             return
         }
+
         currentPage = 1
         _products.value = emptyList()
-        loadNextPage()
+
+        viewModelScope.launch {
+            val localList = localRepo
+                .searchIngredients(lastQuery)
+                .map { it.toProduct() }
+            _products.value = localList
+        }
+
+        searchJob = viewModelScope.launch {
+            _loading.value = true
+            _error.value   = null
+            val remoteList = try {
+                RetrofitClient.api.searchProducts(
+                    query     = lastQuery,
+                    pageSize  = 3,
+                    page      = currentPage,
+                    fields    = "code,product_name,image_url,nutriments"
+                ).takeIf { it.isSuccessful }?.body()?.products.orEmpty()
+            } catch (t: Throwable) {
+                _error.value = t.localizedMessage
+                emptyList()
+            }
+
+            val combined = (_products.value ?: emptyList()) + remoteList
+            _products.value = combined
+
+            if (remoteList.isNotEmpty()) currentPage = 2
+            _loading.value = false
+        }
     }
 
     fun loadNextPage() {
@@ -74,7 +133,6 @@ class SearchProductViewModel : ViewModel() {
                         query     = lastQuery,
                         pageSize  = 3,
                         page      = currentPage,
-                        countries = "pl",
                         fields    = "code,product_name,image_url,nutriments"
                     )
                 if (resp.isSuccessful) {

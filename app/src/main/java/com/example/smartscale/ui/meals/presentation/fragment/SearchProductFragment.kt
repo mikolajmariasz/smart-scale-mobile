@@ -90,8 +90,7 @@ class SearchProductFragment : Fragment() {
             productsAdapter.updateList(list)
         }
         viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            binding.productsRecyclerView.visibility = if (isLoading) View.GONE else View.VISIBLE
+            productsAdapter.setLoadingEnabled(isLoading)
         }
         viewModel.error.observe(viewLifecycleOwner) { err ->
             err?.let { Log.e("SearchProduct", "API error: $it") }
