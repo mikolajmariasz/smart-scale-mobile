@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.meals.presentation.fragment
+package com.example.smartscale.ui.meals.mealList.view
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -11,11 +11,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.smartscale.R
 import com.example.smartscale.databinding.FragmentMealsBinding
-import com.example.smartscale.ui.common.decorations.FadeEdgeDecoration
-import com.example.smartscale.ui.meals.MealsViewModel
-import com.example.smartscale.ui.meals.presentation.adapter.MealsAdapter
-import com.example.smartscale.ui.meals.presentation.view.CircularProgressBar
-import com.example.smartscale.ui.meals.presentation.view.NutritionBarView
+import com.example.smartscale.core.decorations.FadeEdgeDecoration
+import com.example.smartscale.ui.meals.mealList.viewModel.MealsViewModel
+import com.example.smartscale.ui.meals.mealList.adapter.MealsAdapter
+import com.example.smartscale.ui.common.view.CircularProgressBar
+import com.example.smartscale.ui.common.view.NutritionBarView
 import java.text.SimpleDateFormat
 import java.util.*
 

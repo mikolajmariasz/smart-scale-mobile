@@ -1,12 +1,10 @@
-package com.example.smartscale.ui.meals.presentation.fragment
+package com.example.smartscale.ui.meals.addMeal.view
 
 import android.os.Bundle
 import androidx.navigation.fragment.findNavController
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.app.AlertDialog
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,10 +12,10 @@ import com.example.smartscale.R
 import com.example.smartscale.data.remote.model.Product
 import com.example.smartscale.databinding.FragmentAddMealBinding
 import com.example.smartscale.domain.model.Ingredient
-import com.example.smartscale.ui.meals.presentation.adapter.IngredientsAdapter
-import com.example.smartscale.ui.common.dialog.FoodEmojiPickerDialog
-import com.example.smartscale.ui.meals.AddMealViewModel
-import com.example.smartscale.ui.utils.DateTimePicker
+import com.example.smartscale.ui.meals.addMeal.adapter.IngredientsAdapter
+import com.example.smartscale.core.dialog.FoodEmojiPickerDialog
+import com.example.smartscale.ui.meals.addMeal.viewModel.AddMealViewModel
+import com.example.smartscale.core.utils.DateTimePicker
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.meals.presentation.adapter
+package com.example.smartscale.ui.meals.mealList.adapter
 
 import android.view.LayoutInflater
 import android.view.View

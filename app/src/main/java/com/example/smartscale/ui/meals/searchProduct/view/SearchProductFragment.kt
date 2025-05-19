@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.meals.presentation.fragment
+package com.example.smartscale.ui.meals.searchProduct.view
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -16,9 +16,9 @@ import android.widget.EditText
 import com.example.smartscale.R
 import com.example.smartscale.data.remote.model.Product
 import com.example.smartscale.databinding.FragmentSearchProductBinding
-import com.example.smartscale.ui.meals.presentation.adapter.ProductsAdapter
-import com.example.smartscale.ui.meals.presentation.viewmodel.SearchProductViewModel
-import com.example.smartscale.ui.meals.presentation.dialog.CustomProductDialogFragment
+import com.example.smartscale.ui.meals.searchProduct.adapter.ProductsAdapter
+import com.example.smartscale.ui.meals.searchProduct.viewModel.SearchProductViewModel
+import com.example.smartscale.ui.meals.searchProduct.dialog.CustomProductDialogFragment
 import android.util.Log
 
 class SearchProductFragment : Fragment() {

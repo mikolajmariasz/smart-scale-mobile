@@ -1,5 +1,5 @@
 // CustomProductDialogFragment.kt
-package com.example.smartscale.ui.meals.presentation.dialog
+package com.example.smartscale.ui.meals.searchProduct.dialog
 
 import android.app.Dialog
 import android.os.Bundle
