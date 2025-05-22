@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.profile
+package com.example.smartscale.ui.auth
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,53 +10,41 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.smartscale.R
 import com.example.smartscale.data.AuthRepository
-import com.example.smartscale.databinding.FragmentRegisterBinding
+import com.example.smartscale.databinding.FragmentLoginBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import android.util.Patterns
 import kotlinx.coroutines.withContext
 
-class RegisterFragment : Fragment() {
-
-    private var _binding: FragmentRegisterBinding? = null
+class LoginFragment : Fragment() {
+    private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRegisterBinding.inflate(inflater, container, false)
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
-        binding.registerButton.setOnClickListener {
+        binding.loginButton.setOnClickListener {
             val username = binding.usernameInput.text.toString().trim()
-            val email    = binding.emailInput.text.toString().trim()
             val password = binding.passwordInput.text.toString().trim()
 
-            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(context, "Podaj poprawny adres e-mail", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (username.isBlank() || email.isBlank() || password.isBlank()) {
-                Toast.makeText(context, "Wszystkie pola są wymagane", Toast.LENGTH_SHORT).show()
+            if (username.isBlank() || password.isBlank()) {
+                Toast.makeText(context, "Oba pola są wymagane", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             lifecycleScope.launch {
-                val result = AuthRepository.register(
-                    username,
-                    email,
-                    password
-                )
+                val result = AuthRepository.login(requireContext(), username, password)
                 withContext(Dispatchers.Main) {
                     result.fold(
                         onSuccess = { msg ->
                             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                            findNavController().navigate(R.id.action_registerFragment_to_profileFragment)
+                            findNavController().navigate(R.id.action_profileFragment_to_loggedInFragment)
                         },
                         onFailure = { err ->
                             Toast.makeText(
                                 context,
-                                err.localizedMessage ?: "Błąd rejestracji",
+                                err.localizedMessage ?: "Błąd logowania",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -65,8 +53,8 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        binding.loginLink.setOnClickListener {
-            findNavController().navigate(R.id.action_registerFragment_to_profileFragment)
+        binding.registerLink.setOnClickListener {
+            findNavController().navigate(R.id.action_profileFragment_to_registerFragment)
         }
 
         return binding.root
