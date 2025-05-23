@@ -69,9 +69,25 @@ class MealsFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        mealsAdapter = MealsAdapter(emptyList()) {
-            findNavController().navigate(R.id.action_meals_to_add_meal)
-        }
+        mealsAdapter = MealsAdapter(
+            meals = emptyList(),
+            onAddMealClick = {
+                val action = MealsFragmentDirections
+                    .actionMealsToAddMeal(
+                        mealId     = "",
+                        mealDateTime = 0L
+                    )
+                findNavController().navigate(action)
+            },
+            onMealClick = { meal ->
+                val action = MealsFragmentDirections
+                    .actionMealsToAddMeal(
+                        mealId      = meal.localId,
+                        mealDateTime = meal.dateTime
+                    )
+                findNavController().navigate(action)
+            }
+        )
         binding.mealsList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = mealsAdapter

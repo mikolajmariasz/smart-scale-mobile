@@ -23,8 +23,15 @@ interface MealDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMeal(meal: MealEntity): Long
 
+    @Transaction
+    @Query("SELECT * FROM meals WHERE localId = :localId")
+    suspend fun getMealWithIngredientsById(localId: String): MealWithIngredientsEntity?
+
     @Update
     suspend fun updateMeal(meal: MealEntity): Int
+
+    @Query("DELETE FROM meals WHERE localId = :localId")
+    suspend fun deleteMealByLocalId(localId: String)
 
     @Query("SELECT * FROM meals WHERE syncStatus = :status")
     suspend fun getMealsBySyncStatus(status: SyncStatus): List<MealEntity>

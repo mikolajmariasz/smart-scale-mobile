@@ -22,6 +22,15 @@
         android:id="@+id/navigation_add_meal"
         android:name="com.example.smartscale.ui.meals.addMeal.view.AddMealFragment"
         tools:layout="@layout/fragment_add_meal">
+
+        <argument
+            android:name="mealId"
+            app:argType="string" />
+
+        <argument
+            android:name="mealDateTime"
+            app:argType="long" />
+
         <action
             android:id="@+id/action_addMeal_to_searchProduct"
             app:destination="@id/navigation_search_product" />
