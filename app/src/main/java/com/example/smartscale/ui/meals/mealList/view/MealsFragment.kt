@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.meals.presentation.fragment
+package com.example.smartscale.ui.meals.mealList.view
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -11,11 +11,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.smartscale.R
 import com.example.smartscale.databinding.FragmentMealsBinding
-import com.example.smartscale.ui.common.decorations.FadeEdgeDecoration
-import com.example.smartscale.ui.meals.MealsViewModel
-import com.example.smartscale.ui.meals.presentation.adapter.MealsAdapter
-import com.example.smartscale.ui.meals.presentation.view.CircularProgressBar
-import com.example.smartscale.ui.meals.presentation.view.NutritionBarView
+import com.example.smartscale.core.decorations.FadeEdgeDecoration
+import com.example.smartscale.ui.meals.mealList.viewModel.MealsViewModel
+import com.example.smartscale.ui.meals.mealList.adapter.MealsAdapter
+import com.example.smartscale.ui.common.view.CircularProgressBar
+import com.example.smartscale.ui.common.view.NutritionBarView
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -69,9 +69,25 @@ class MealsFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        mealsAdapter = MealsAdapter(emptyList()) {
-            findNavController().navigate(R.id.action_meals_to_add_meal)
-        }
+        mealsAdapter = MealsAdapter(
+            meals = emptyList(),
+            onAddMealClick = {
+                val action = MealsFragmentDirections
+                    .actionMealsToAddMeal(
+                        mealId     = "",
+                        mealDateTime = 0L
+                    )
+                findNavController().navigate(action)
+            },
+            onMealClick = { meal ->
+                val action = MealsFragmentDirections
+                    .actionMealsToAddMeal(
+                        mealId      = meal.localId,
+                        mealDateTime = meal.dateTime
+                    )
+                findNavController().navigate(action)
+            }
+        )
         binding.mealsList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = mealsAdapter

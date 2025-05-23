@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.common.decorations
+package com.example.smartscale.core.decorations
 
 import android.content.Context
 import android.graphics.Canvas

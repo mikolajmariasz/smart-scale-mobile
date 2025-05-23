@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.meals.presentation.view
+package com.example.smartscale.ui.common.view
 
 import android.animation.ValueAnimator
 import android.content.Context

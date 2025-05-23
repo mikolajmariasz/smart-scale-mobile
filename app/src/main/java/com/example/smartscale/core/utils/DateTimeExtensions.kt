@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.utils
+package com.example.smartscale.core.utils
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog

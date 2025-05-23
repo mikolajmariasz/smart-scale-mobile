@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.meals.presentation.adapter
+package com.example.smartscale.ui.meals.addMeal.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +11,8 @@ import com.example.smartscale.domain.model.Ingredient
 
 class IngredientsAdapter(
     private var items: List<Ingredient>,
-    private val onAddClick: () -> Unit
+    private val onAddClick: () -> Unit,
+    private val onRemoveClick: (Ingredient) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -20,12 +21,13 @@ class IngredientsAdapter(
     }
 
     inner class ProductViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val name      : TextView = v.findViewById(R.id.ingredientName)
-        val weight    : TextView = v.findViewById(R.id.ingredientWeight)
-        val kcal      : TextView = v.findViewById(R.id.ingredientCalories)
-        val protein   : TextView = v.findViewById(R.id.ingredientProtein)
-        val fat       : TextView = v.findViewById(R.id.ingredientFat)
-        val carbs     : TextView = v.findViewById(R.id.ingredientCarbs)
+        val name      : TextView    = v.findViewById(R.id.ingredientName)
+        val weight    : TextView    = v.findViewById(R.id.ingredientWeight)
+        val kcal      : TextView    = v.findViewById(R.id.ingredientCalories)
+        val protein   : TextView    = v.findViewById(R.id.ingredientProtein)
+        val fat       : TextView    = v.findViewById(R.id.ingredientFat)
+        val carbs     : TextView    = v.findViewById(R.id.ingredientCarbs)
+        val deleteBtn : ImageView   = v.findViewById(R.id.deleteButton)  // ← tu
     }
 
     inner class AddViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -38,23 +40,25 @@ class IngredientsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return if (viewType == TYPE_PRODUCT) {
-            val v = inflater.inflate(R.layout.item_ingredient, parent, false)
-            ProductViewHolder(v)
+            ProductViewHolder(inflater.inflate(R.layout.item_ingredient, parent, false))
         } else {
-            val v = inflater.inflate(R.layout.item_add, parent, false)
-            AddViewHolder(v)
+            AddViewHolder(inflater.inflate(R.layout.item_add, parent, false))
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is ProductViewHolder) {
-            val p = items[position]
-            holder.name.text    = p.name
-            holder.weight.text  = "${p.weight} g"
-            holder.kcal.text    = "${p.calories} kcal"
-            holder.protein.text = "${p.protein} g"
-            holder.fat.text     = "${p.fat} g"
-            holder.carbs.text   = "${p.carbs} g"
+            val ing = items[position]
+            holder.name.text    = ing.name
+            holder.weight.text  = "${ing.weight} g"
+            holder.kcal.text    = "${ing.calories} kcal"
+            holder.protein.text = "${ing.protein} g"
+            holder.fat.text     = "${ing.fat} g"
+            holder.carbs.text   = "${ing.carbs} g"
+
+            holder.deleteBtn.setOnClickListener {
+                onRemoveClick(ing)
+            }
         } else if (holder is AddViewHolder) {
             holder.addBtn.setOnClickListener { onAddClick() }
         }
@@ -63,7 +67,7 @@ class IngredientsAdapter(
     override fun getItemCount() = items.size + 1
 
     fun updateList(newList: List<Ingredient>) {
-        items = newList.toList()
+        items = newList
         notifyDataSetChanged()
     }
 }

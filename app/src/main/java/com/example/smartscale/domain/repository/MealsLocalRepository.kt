@@ -20,19 +20,24 @@ class MealsLocalRepository(
     fun getMealsForPeriod(startTs: Long, endTs: Long): LiveData<List<Meal>> =
         mealDao.getMealsWithIngredients(startTs, endTs).map { list ->
             list.map { mw ->
+                val entity = mw.meal
                 val ingrList = mw.ingredients.map { it.toDomain() }
                 val totalKcal = ingrList.sumOf { it.calories.toDouble() }.toFloat()
                 val totalCarbs = ingrList.sumOf { it.carbs.toDouble() }.toFloat()
                 val totalProt  = ingrList.sumOf { it.protein.toDouble() }.toFloat()
                 val totalFat   = ingrList.sumOf { it.fat.toDouble() }.toFloat()
+                val timeString = sdf.format(Date(entity.dateTime))
+
                 Meal(
-                    name     = mw.meal.name,
-                    time     = sdf.format(Date(mw.meal.dateTime)),
-                    emoji    = mw.meal.emoji,
-                    calories = totalKcal,
-                    carbs    = totalCarbs,
-                    protein  = totalProt,
-                    fat      = totalFat
+                    localId  = entity.localId,
+                    dateTime = entity.dateTime,
+                    name      = entity.name,
+                    time      = timeString,
+                    emoji     = entity.emoji,
+                    calories  = totalKcal,
+                    carbs     = totalCarbs,
+                    protein   = totalProt,
+                    fat       = totalFat
                 )
             }
         }
@@ -63,6 +68,52 @@ class MealsLocalRepository(
                 )
             )
         }
+    }
+
+    suspend fun getMealForEdit(localId: String): MealWithIngredientsEntity? =
+        mealDao.getMealWithIngredientsById(localId)
+
+    suspend fun updateMeal(
+        localId: String,
+        name: String,
+        dateTime: Long,
+        emoji: String,
+        ingredients: List<Ingredient>
+    ) {
+        val mealEntity = MealEntity(
+            localId   = localId,
+            name      = name,
+            dateTime  = dateTime,
+            emoji     = emoji,
+        )
+        mealDao.updateMeal(mealEntity)
+
+        ingredientDao.deleteIngredientsByMealLocalId(localId)
+
+        ingredients.forEach { ing ->
+            ingredientDao.insertIngredient(
+                IngredientEntity(
+                    mealLocalId      = localId,
+                    name             = ing.name,
+                    weight           = ing.weight,
+                    caloriesPer100g  = ing.caloriesPer100g,
+                    carbsPer100g     = ing.carbsPer100g,
+                    proteinPer100g   = ing.proteinPer100g,
+                    fatPer100g       = ing.fatPer100g
+                )
+            )
+        }
+    }
+
+    suspend fun deleteMeal(localId: String) {
+        ingredientDao.deleteIngredientsByMealLocalId(localId)
+        mealDao.deleteMealByLocalId(localId)
+    }
+
+    suspend fun searchIngredients(query: String): List<Ingredient> {
+        return ingredientDao
+            .searchIngredientsByName(query)
+            .map { it.toDomain() }
     }
 }
 
