@@ -1,6 +1,7 @@
 package com.example.smartscale.ui.profile
 
 import android.os.Bundle
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +9,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.smartscale.R
-import com.example.smartscale.ui.profile.AuthRepository
 import com.example.smartscale.databinding.FragmentRegisterBinding
 
 class RegisterFragment : Fragment() {
@@ -19,15 +19,27 @@ class RegisterFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
+        AuthRepository.init(requireContext().applicationContext)
         _binding = FragmentRegisterBinding.inflate(inflater, container, false)
 
         binding.registerButton.setOnClickListener {
             val username = binding.usernameInput.text.toString().trim()
             val email = binding.emailInput.text.toString().trim()
             val password = binding.passwordInput.text.toString().trim()
+            val passwordConfirm = binding.passwordConfirmInput.text.toString().trim()
 
-            if (username.isBlank() || email.isBlank() || password.isBlank()) {
+            if (username.isBlank() || email.isBlank() || password.isBlank() || passwordConfirm.isBlank()) {
                 Toast.makeText(context, "Wszystkie pola są wymagane", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(context, "Nieprawidłowy adres e-mail", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (password != passwordConfirm) {
+                Toast.makeText(context, "Hasła nie są takie same", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -41,7 +53,6 @@ class RegisterFragment : Fragment() {
         }
 
         binding.loginLink.setOnClickListener {
-            // Przejście do okna logowania
             findNavController().navigate(R.id.action_registerFragment_to_profileFragment)
         }
 

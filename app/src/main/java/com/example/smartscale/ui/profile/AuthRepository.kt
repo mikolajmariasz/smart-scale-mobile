@@ -1,33 +1,31 @@
 package com.example.smartscale.ui.profile
 
+import android.content.Context
+import com.example.smartscale.data.SQLiteHelper
+
 object AuthRepository {
-    private val registeredUsers = mutableListOf<User>()
+    private lateinit var dbHelper: SQLiteHelper
     private var currentUser: User? = null
 
-    fun register(username: String, email: String, password: String): Boolean {
-        if (registeredUsers.any { it.username == username }) return false
-        registeredUsers.add(User(username, email, password))
-        return true
+    fun init(context: Context) {
+        dbHelper = SQLiteHelper(context.applicationContext)
+        dbHelper.writableDatabase
     }
 
-    fun login(username: String, password: String): Boolean {
-        val user = registeredUsers.find {
-            (it.username == username || it.email == username) && it.password == password
-        }
-        return if (user != null) {
-            currentUser = user
-            true
-        } else {
-            false
-        }
+    fun register(username: String, email: String, password: String): Boolean {
+        val user = User(username, email, password)
+        return dbHelper.registerUser(user)
+    }
+
+    fun login(usernameOrEmail: String, password: String): Boolean {
+        val user = dbHelper.loginUser(usernameOrEmail, password)
+        currentUser = user
+        return user != null
     }
 
     fun logout() {
         currentUser = null
     }
 
-    fun getCurrentUser(): User? {
-        return currentUser
-    }
+    fun getCurrentUser(): User? = currentUser
 }
-

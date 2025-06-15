@@ -55,6 +55,7 @@ retrofit-converter-gson    = { module = "com.squareup.retrofit2:converter-gson",
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutinesAndroid" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+zxing = "com.journeyapps:zxing-android-embedded:4.3.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

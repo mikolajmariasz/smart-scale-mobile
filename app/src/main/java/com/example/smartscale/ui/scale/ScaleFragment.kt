@@ -1,28 +1,23 @@
 package com.example.smartscale.ui.scale
 
-import android.Manifest
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.view.*
-import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.smartscale.databinding.FragmentScaleBinding
+import android.graphics.Bitmap
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
+import com.google.zxing.common.BitMatrix
+import com.journeyapps.barcodescanner.BarcodeEncoder
+
 
 class ScaleFragment : Fragment() {
 
     private var _binding: FragmentScaleBinding? = null
     private val binding get() = _binding!!
 
-    private val REQUIRED_SSID = "ScaleParing"
     private lateinit var scaleViewModel: ScaleViewModel
 
     override fun onCreateView(
@@ -35,65 +30,38 @@ class ScaleFragment : Fragment() {
         val root: View = binding.root
 
 
-        val clientIdTextView: TextView = binding.clientIdText
-        scaleViewModel.clientId.observe(viewLifecycleOwner) {
-            clientIdTextView.text = it
-        }
+        binding.generateQrButton.setOnClickListener {
+            scaleViewModel.updateClientIdInput(binding.clientIdInput.text.toString())
+            scaleViewModel.updateWifiNameInput(binding.wifiNameInput.text.toString())
+            scaleViewModel.updateWifiPasswordInput(binding.wifiPasswordInput.text.toString())
 
-
-        val textView: TextView = binding.textScale
-        scaleViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-
-
-        checkLocationPermission()
-
-
-        textView.setOnClickListener {
-            checkAndOpenScalePage()
+            val qrContent = scaleViewModel.generateQrContent()
+            if (qrContent != null) {
+                val qrBitmap = generateQrCode(qrContent)
+                if (qrBitmap != null) {
+                    binding.qrImageView.setImageBitmap(qrBitmap)
+                } else {
+                    Toast.makeText(context, "Błąd generowania kodu QR", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(context, "Uzupełnij wszystkie pola", Toast.LENGTH_SHORT).show()
+            }
         }
 
         return root
     }
 
-    private fun checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                100
-            )
+    private fun generateQrCode(data: String): Bitmap? {
+        return try {
+            val bitMatrix: BitMatrix = MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, 500, 500)
+            val barcodeEncoder = BarcodeEncoder()
+            barcodeEncoder.createBitmap(bitMatrix)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
-    private fun checkAndOpenScalePage() {
-        val wifiManager = requireContext().applicationContext
-            .getSystemService(Context.WIFI_SERVICE) as WifiManager
-        val currentSSID = wifiManager.connectionInfo.ssid.replace("\"", "")
-
-        if (currentSSID == REQUIRED_SSID) {
-            val builder = AlertDialog.Builder(requireContext())
-            builder.setTitle("Połączenie z wagą")
-            builder.setMessage("Czy chcesz otworzyć stronę konfiguracji wagi?")
-            builder.setPositiveButton("Tak") { _, _ ->
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://192.168.4.1"))
-                startActivity(intent)
-            }
-            builder.setNegativeButton("Anuluj", null)
-            builder.show()
-        } else {
-            Toast.makeText(
-                requireContext(),
-                "Połącz się z siecią WiFi: $REQUIRED_SSID",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
