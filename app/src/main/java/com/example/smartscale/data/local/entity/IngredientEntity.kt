@@ -24,6 +24,7 @@ data class IngredientEntity(
     val remoteId: String? = null,
     val mealLocalId: String,
     val name: String,
+    val barcode: String,
     val weight: Float,
     val caloriesPer100g: Float,
     val carbsPer100g: Float,

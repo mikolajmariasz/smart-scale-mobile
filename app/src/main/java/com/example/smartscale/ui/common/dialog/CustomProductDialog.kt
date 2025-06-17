@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import com.example.smartscale.R
 import com.example.smartscale.databinding.DialogAddIngredientBinding
 import com.example.smartscale.domain.model.Ingredient
+import java.util.UUID
 
 class CustomProductDialogFragment(
     private val onAdd: (Ingredient) -> Unit
@@ -40,11 +41,13 @@ class CustomProductDialogFragment(
                 val prot100 = binding.inputProt100.text.toString().toFloatOrNull() ?: 0f
                 val fat100  = binding.inputFat100.text.toString().toFloatOrNull() ?: 0f
                 val carbs100= binding.inputCarbs100.text.toString().toFloatOrNull() ?: 0f
+                val barcode = "MANUAL-" + UUID.randomUUID().toString()
 
                 onAdd(
                     Ingredient(
                         name = name,
                         weight = weight,
+                        barcode = barcode,
                         caloriesPer100g = cal100,
                         carbsPer100g = carbs100,
                         proteinPer100g = prot100,

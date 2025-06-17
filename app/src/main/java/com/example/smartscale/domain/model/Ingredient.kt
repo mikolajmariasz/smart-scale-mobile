@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class Ingredient(
     val name: String,
     val weight: Float,
+    val barcode: String,
     val caloriesPer100g: Float,
     val carbsPer100g: Float,
     val proteinPer100g: Float,

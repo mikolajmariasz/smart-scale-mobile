@@ -55,6 +55,7 @@ class MealsLocalRepository(
                 IngredientEntity(
                     mealLocalId      = mealEntity.localId,
                     name             = ing.name,
+                    barcode          = ing.barcode,
                     weight           = ing.weight,
                     caloriesPer100g  = ing.caloriesPer100g,
                     carbsPer100g     = ing.carbsPer100g,
@@ -70,6 +71,7 @@ private fun IngredientEntity.toDomain(): Ingredient =
     Ingredient(
         name            = name,
         weight          = weight,
+        barcode         = barcode,
         caloriesPer100g = caloriesPer100g,
         carbsPer100g    = carbsPer100g,
         proteinPer100g  = proteinPer100g,

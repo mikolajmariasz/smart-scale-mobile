@@ -17,5 +17,8 @@ interface IngredientDao {
 
     @Query("SELECT * FROM ingredients WHERE syncStatus = :status")
     suspend fun getIngredientsBySyncStatus(status: SyncStatus): List<IngredientEntity>
+
+    @Query("SELECT * FROM ingredients WHERE barcode = :barcode LIMIT 1")
+    suspend fun getIngredientByBarcode(barcode: String): IngredientEntity?
 }
 

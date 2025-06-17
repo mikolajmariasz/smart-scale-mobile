@@ -14,7 +14,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.smartscale.databinding.ActivityMainBinding
 import com.example.smartscale.ui.profile.AuthRepository
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.example.smartscale.ServerService
+import com.example.smartscale.data.ServerService
 
 class MainActivity : AppCompatActivity() {
 

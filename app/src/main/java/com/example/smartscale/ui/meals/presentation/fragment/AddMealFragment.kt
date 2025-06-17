@@ -64,6 +64,7 @@ class AddMealFragment : Fragment() {
                 val fromApi = Ingredient(
                     name  = prod.productName.orEmpty(),
                     weight = w,
+                    barcode = prod.code ?: "UNKNOWN-BARCODE",
                     caloriesPer100g = prod.nutriments?.energyKcal100g ?: 0f,
                     carbsPer100g = prod.nutriments?.carbohydrates100g ?: 0f,
                     proteinPer100g = prod.nutriments?.proteins100g ?: 0f,

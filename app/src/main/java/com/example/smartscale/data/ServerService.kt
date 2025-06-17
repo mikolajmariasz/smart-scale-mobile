@@ -1,35 +1,43 @@
-package com.example.smartscale
+package com.example.smartscale.data
 
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.example.smartscale.data.local.AppDatabase
+import com.example.smartscale.data.local.entity.IngredientEntity
+import com.example.smartscale.data.remote.RetrofitClient
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetSocketAddress
 import android.net.wifi.WifiManager
-import android.content.Context
+
+data class ProductData(val barcode: String, val weight: Float)
 
 class ServerService : Service() {
 
     private var multicastLock: WifiManager.MulticastLock? = null
+    private val gson = Gson()
+    private val api = RetrofitClient.api
+    private lateinit var database: AppDatabase
 
     override fun onCreate() {
         super.onCreate()
+        database = AppDatabase.getInstance(applicationContext)
         enableMulticast()
         Log.d("UDP", "✅ ServerService.onCreate()")
-
         showForegroundNotification()
         startUdpReceiver()
-    }
-
-    init {
-        Log.d("UDP", "🔄 ServerService KLASA ZAŁADOWANA")
     }
 
     private fun startUdpReceiver() {
@@ -46,12 +54,52 @@ class ServerService : Service() {
                     socket.receive(packet)
                     val message = String(packet.data, 0, packet.length)
                     Log.d("UDP", "✅ Odebrano: $message")
+                    handleReceivedMessage(message)
                 }
 
             } catch (e: Exception) {
                 Log.e("UDP", "❌ Błąd UDP: ${e.message}")
             }
         }.start()
+    }
+
+    private fun handleReceivedMessage(message: String) {
+        try {
+            val productData = gson.fromJson(message, ProductData::class.java)
+            CoroutineScope(Dispatchers.IO).launch {
+                val ingredientDao = database.ingredientDao()
+
+                val existingIngredient = ingredientDao.getIngredientByBarcode(productData.barcode)
+
+                if (existingIngredient == null) {
+                    Log.d("UDP", "🔎 Produkt nie znaleziony lokalnie, pobieram z API...")
+                    val response = api.getProductByCode(productData.barcode)
+                    val product = response.body()?.product
+
+                    if (product != null) {
+                        val newEntity = IngredientEntity(
+                            name = product.productName ?: "Nieznany produkt",
+                            barcode = productData.barcode,
+                            weight = productData.weight,
+                            caloriesPer100g = product.nutriments?.energyKcal100g?.toFloat() ?: 0f,
+                            carbsPer100g = product.nutriments?.carbohydrates100g?.toFloat() ?: 0f,
+                            proteinPer100g = product.nutriments?.proteins100g?.toFloat() ?: 0f,
+                            fatPer100g = product.nutriments?.fat100g?.toFloat() ?: 0f,
+                            mealLocalId = "UNASSIGNED",
+                            syncStatus = com.example.smartscale.data.local.entity.SyncStatus.TO_SYNC
+                        )
+                        ingredientDao.insertIngredient(newEntity)
+                        Log.d("UDP", "💾 Produkt zapisany w bazie danych Room")
+                    } else {
+                        Log.w("UDP", "⚠ Nie udało się pobrać produktu z API")
+                    }
+                } else {
+                    Log.d("UDP", "📦 Produkt już istnieje w lokalnej bazie danych")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("UDP", "❌ Błąd podczas przetwarzania wiadomości: ${e.message}")
+        }
     }
 
     private fun enableMulticast() {
