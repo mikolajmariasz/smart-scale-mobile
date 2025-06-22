@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="24dp"
     android:fillViewport="true">
 
@@ -64,6 +65,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/save" />
+
+        <Button
+            android:id="@+id/deleteMealButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/delete_meal"
+            android:backgroundTint="#7A3734" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

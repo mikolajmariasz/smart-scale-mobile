@@ -31,4 +31,10 @@
     <string name="enter_weight">Enter weight</string>
     <string name="ok">OK</string>
     <string name="product_image">Product image</string>
+    <string name="update_meal">Update</string>
+    <string name="edit_meal">Edit meal</string>
+    <string name="delete_meal">Delete</string>
+    <string name="confirm_delete_title">Delete</string>
+    <string name="confirm_delete_message">Are you sure?</string>
+    <string name="delete">Delete</string>
 </resources>

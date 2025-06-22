@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.common.dialog
+package com.example.smartscale.core.dialog
 
 import android.os.Bundle
 import android.view.*

@@ -21,8 +21,10 @@ interface OpenFoodFactsApi {
         @Query("json") json: Int = 1,
         @Query("page_size") pageSize: Int,
         @Query("page") page: Int,
-        @Query("fields") fields: String = "code,product_name,image_url,nutriments",
-        @Query("countries") countries: String? = null
+        @Query("sort_by") sortBy: String = "unique_scans_n",
+        @Query("fields") fields: String =
+            "code,product_name,product_name_pl,image_url,nutriments",
+        @Query("lc") lc: String = "pl"
     ): Response<SearchResponse>
 
     @GET("api/v0/product/{barcode}.json")

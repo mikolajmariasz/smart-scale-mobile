@@ -9,7 +9,7 @@
     <!-- Meals list screen -->
     <fragment
         android:id="@+id/navigation_meals"
-        android:name="com.example.smartscale.ui.meals.presentation.fragment.MealsFragment"
+        android:name="com.example.smartscale.ui.meals.mealList.view.MealsFragment"
         android:label="@string/title_meals"
         tools:layout="@layout/fragment_meals">
         <action
@@ -20,8 +20,17 @@
     <!-- Add Meal screen -->
     <fragment
         android:id="@+id/navigation_add_meal"
-        android:name="com.example.smartscale.ui.meals.presentation.fragment.AddMealFragment"
+        android:name="com.example.smartscale.ui.meals.addMeal.view.AddMealFragment"
         tools:layout="@layout/fragment_add_meal">
+
+        <argument
+            android:name="mealId"
+            app:argType="string" />
+
+        <argument
+            android:name="mealDateTime"
+            app:argType="long" />
+
         <action
             android:id="@+id/action_addMeal_to_searchProduct"
             app:destination="@id/navigation_search_product" />
@@ -30,7 +39,7 @@
     <!-- Search Product screen -->
     <fragment
         android:id="@+id/navigation_search_product"
-        android:name="com.example.smartscale.ui.meals.presentation.fragment.SearchProductFragment"
+        android:name="com.example.smartscale.ui.meals.searchProduct.view.SearchProductFragment"
         tools:layout="@layout/fragment_search_product" />
 
     <!-- Scale screen -->
