@@ -3,9 +3,8 @@ package com.example.smartscale.ui.meals.searchProduct.dialog
 
 import android.app.Dialog
 import android.os.Bundle
-import android.text.InputType
 import android.view.LayoutInflater
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.fragment.app.DialogFragment
 import com.example.smartscale.R
 import com.example.smartscale.databinding.DialogAddIngredientBinding
@@ -21,16 +20,7 @@ class CustomProductDialogFragment(
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogAddIngredientBinding.inflate(LayoutInflater.from(requireContext()))
 
-        binding.inputName.hint = getString(R.string.name)
-        binding.inputWeight.hint = getString(R.string.weight_g)
-        binding.inputWeight.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-
-        binding.inputCal100.hint = getString(R.string.calories_per_100g)
-        binding.inputProt100.hint = getString(R.string.protein_per_100g)
-        binding.inputFat100.hint = getString(R.string.fat_per_100g)
-        binding.inputCarbs100.hint = getString(R.string.carbs_per_100g)
-
-        return AlertDialog.Builder(requireContext())
+        return MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.add_custom_product)
             .setView(binding.root)
             .setPositiveButton(R.string.add) { _, _ ->

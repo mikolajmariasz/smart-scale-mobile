@@ -1,18 +1,17 @@
 package com.example.smartscale.ui.meals.searchProduct.view
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.EditText
+import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
 import com.example.smartscale.R
 import com.example.smartscale.data.remote.model.Product
 import com.example.smartscale.databinding.FragmentSearchProductBinding
@@ -70,8 +69,14 @@ class SearchProductFragment : Fragment() {
     }
 
     private fun setupSearchInput() {
-        binding.searchEditText.doOnTextChanged { text, _, _, _ ->
-            viewModel.onQueryChanged(text.toString())
+        binding.searchEditText.setOnEditorActionListener { _, actionId, event ->
+            val isEnterKey = event?.keyCode == android.view.KeyEvent.KEYCODE_ENTER && event.action == android.view.KeyEvent.ACTION_DOWN
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH || isEnterKey) {
+                viewModel.onQueryChanged(binding.searchEditText.text.toString())
+                true
+            } else {
+                false
+            }
         }
     }
 
@@ -99,17 +104,13 @@ class SearchProductFragment : Fragment() {
     }
 
     private fun showWeightDialog(product: Product) {
-        val input = EditText(requireContext()).apply {
-            hint = getString(R.string.enter_weight)
-            inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-        }
-        AlertDialog.Builder(requireContext())
+        val dialogView = layoutInflater.inflate(R.layout.dialog_enter_weight, null)
+        val input = dialogView.findViewById<EditText>(R.id.inputWeight)
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
             .setTitle(product.productName ?: product.code)
-            .setView(input)
+            .setView(dialogView)
             .setPositiveButton(R.string.ok) { _, _ ->
-                Log.d("SearchProduct", "OK clicked, product=$product")
                 val weight = input.text.toString().toFloatOrNull() ?: 0f
-                Log.d("SearchProduct", "Parsed weight=$weight")
                 // Tworzymy gotowy Ingredient
                 val newIng = Ingredient(
                     name            = product.productName.orEmpty(),
