@@ -42,6 +42,7 @@ class SearchProductFragment : Fragment() {
         setupSearchInput()
         setupAddCustomFab()
         observeViewModel()
+
     }
 
     private fun setupRecycler() {

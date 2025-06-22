@@ -24,6 +24,8 @@ class SearchProductViewModel : ViewModel() {
     private var currentPage = 1
     private var lastQuery   = ""
 
+
+
     fun onQueryChanged(query: String) {
         searchJob?.cancel()
         lastQuery = query.trim()
@@ -93,4 +95,5 @@ class SearchProductViewModel : ViewModel() {
             }
         }
     }
+
 }

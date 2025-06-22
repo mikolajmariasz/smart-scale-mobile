@@ -25,6 +25,8 @@ import android.net.wifi.WifiManager
 data class ProductData(val barcode: String, val weight: Float)
 
 class ServerService : Service() {
+    private val channelId = "udp_channel"
+    private lateinit var notificationManager: NotificationManager
 
     private var multicastLock: WifiManager.MulticastLock? = null
     private val gson = Gson()
@@ -33,10 +35,11 @@ class ServerService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        showForegroundNotification()
         database = AppDatabase.getInstance(applicationContext)
         enableMulticast()
         Log.d("UDP", "✅ ServerService.onCreate()")
-        showForegroundNotification()
         startUdpReceiver()
     }
 
@@ -66,39 +69,46 @@ class ServerService : Service() {
     private fun handleReceivedMessage(message: String) {
         try {
             val productData = gson.fromJson(message, ProductData::class.java)
+
             CoroutineScope(Dispatchers.IO).launch {
-                val ingredientDao = database.ingredientDao()
+                try {
+                    val ingredientDao = database.ingredientDao()
+                    val existingIngredient = ingredientDao.getIngredientByBarcode(productData.barcode)
 
-                val existingIngredient = ingredientDao.getIngredientByBarcode(productData.barcode)
+                    if (existingIngredient == null) {
+                        Log.d("UDP", "🔎 Produkt nie znaleziony lokalnie, pobieram z API...")
 
-                if (existingIngredient == null) {
-                    Log.d("UDP", "🔎 Produkt nie znaleziony lokalnie, pobieram z API...")
-                    val response = api.getProductByCode(productData.barcode)
-                    val product = response.body()?.product
+                        val response = api.getProductByCode(productData.barcode)
+                        val product = response.body()?.product
 
-                    if (product != null) {
-                        val newEntity = IngredientEntity(
-                            name = product.productName ?: "Nieznany produkt",
-                            barcode = productData.barcode,
-                            weight = productData.weight,
-                            caloriesPer100g = product.nutriments?.energyKcal100g?.toFloat() ?: 0f,
-                            carbsPer100g = product.nutriments?.carbohydrates100g?.toFloat() ?: 0f,
-                            proteinPer100g = product.nutriments?.proteins100g?.toFloat() ?: 0f,
-                            fatPer100g = product.nutriments?.fat100g?.toFloat() ?: 0f,
-                            mealLocalId = "UNASSIGNED",
-                            syncStatus = com.example.smartscale.data.local.entity.SyncStatus.TO_SYNC
-                        )
-                        ingredientDao.insertIngredient(newEntity)
-                        Log.d("UDP", "💾 Produkt zapisany w bazie danych Room")
+                        if (product != null) {
+                            val newEntity = IngredientEntity(
+                                name = product.productName ?: "Nieznany produkt",
+                                barcode = productData.barcode,
+                                weight = productData.weight,
+                                caloriesPer100g = product.nutriments?.energyKcal100g?.toFloat() ?: 0f,
+                                carbsPer100g = product.nutriments?.carbohydrates100g?.toFloat() ?: 0f,
+                                proteinPer100g = product.nutriments?.proteins100g?.toFloat() ?: 0f,
+                                fatPer100g = product.nutriments?.fat100g?.toFloat() ?: 0f,
+                                mealLocalId = null,
+                                syncStatus = com.example.smartscale.data.local.entity.SyncStatus.TO_SYNC
+                            )
+                            ingredientDao.insertIngredient(newEntity)
+                            Log.d("UDP", "💾 Produkt zapisany w bazie danych Room")
+                            updateForegroundNotification("Dodano produkt: ${newEntity.name} (${newEntity.weight} g)")
+                        } else {
+                            Log.w("UDP", "⚠ Nie udało się pobrać produktu z API")
+                        }
                     } else {
-                        Log.w("UDP", "⚠ Nie udało się pobrać produktu z API")
+                        Log.d("UDP", "📦 Produkt już istnieje w lokalnej bazie danych")
                     }
-                } else {
-                    Log.d("UDP", "📦 Produkt już istnieje w lokalnej bazie danych")
+                } catch (e: Exception) {
+                    Log.e("UDP", "❌ Błąd wewnątrz coroutine: ${e.message}", e)
                 }
             }
+
         } catch (e: Exception) {
-            Log.e("UDP", "❌ Błąd podczas przetwarzania wiadomości: ${e.message}")
+            Log.e("UDP", "❌ Błąd podczas przetwarzania wiadomości: ${e.message}", e)
         }
     }
 
@@ -127,6 +137,17 @@ class ServerService : Service() {
 
         startForeground(1, notification)
     }
+
+    private fun updateForegroundNotification(contentText: String) {
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("Waga: nasłuchiwanie UDP")
+            .setContentText(contentText)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .build()
+
+        notificationManager.notify(1, notification)
+    }
+
 
     override fun onBind(intent: Intent?): IBinder? = null
 }

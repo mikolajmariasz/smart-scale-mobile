@@ -17,6 +17,7 @@ class MealsLocalRepository(
 
     private val sdf = SimpleDateFormat("dd.MM HH:mm", Locale.getDefault())
 
+
     fun getMealsForPeriod(startTs: Long, endTs: Long): LiveData<List<Meal>> =
         mealDao.getMealsWithIngredients(startTs, endTs).map { list ->
             list.map { mw ->
@@ -77,3 +78,4 @@ private fun IngredientEntity.toDomain(): Ingredient =
         proteinPer100g  = proteinPer100g,
         fatPer100g      = fatPer100g
     )
+

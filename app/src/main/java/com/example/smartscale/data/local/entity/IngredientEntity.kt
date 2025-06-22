@@ -22,7 +22,7 @@ data class IngredientEntity(
     @PrimaryKey
     val localId: String = UUID.randomUUID().toString(),
     val remoteId: String? = null,
-    val mealLocalId: String,
+    val mealLocalId: String? = null,
     val name: String,
     val barcode: String,
     val weight: Float,

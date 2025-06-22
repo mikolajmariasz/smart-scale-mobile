@@ -20,5 +20,7 @@ interface IngredientDao {
 
     @Query("SELECT * FROM ingredients WHERE barcode = :barcode LIMIT 1")
     suspend fun getIngredientByBarcode(barcode: String): IngredientEntity?
+
+
 }
 
