@@ -1,5 +1,7 @@
 package com.example.smartscale
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.smartscale.data.ServerService
 import com.example.smartscale.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -30,5 +33,11 @@ class MainActivity : AppCompatActivity() {
             )
         )
         navView.setupWithNavController(navController)
+        val intent = Intent(this, ServerService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
     }
 }
