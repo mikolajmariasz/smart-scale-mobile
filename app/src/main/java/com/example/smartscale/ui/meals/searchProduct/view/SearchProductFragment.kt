@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.meals.presentation.fragment
+package com.example.smartscale.ui.meals.searchProduct.view
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -16,10 +16,11 @@ import android.widget.EditText
 import com.example.smartscale.R
 import com.example.smartscale.data.remote.model.Product
 import com.example.smartscale.databinding.FragmentSearchProductBinding
-import com.example.smartscale.ui.meals.presentation.adapter.ProductsAdapter
-import com.example.smartscale.ui.meals.presentation.viewmodel.SearchProductViewModel
-import com.example.smartscale.ui.meals.presentation.dialog.CustomProductDialogFragment
+import com.example.smartscale.ui.meals.searchProduct.adapter.ProductsAdapter
+import com.example.smartscale.ui.meals.searchProduct.viewModel.SearchProductViewModel
+import com.example.smartscale.ui.meals.searchProduct.dialog.CustomProductDialogFragment
 import android.util.Log
+import com.example.smartscale.domain.model.Ingredient
 
 class SearchProductFragment : Fragment() {
 
@@ -91,8 +92,7 @@ class SearchProductFragment : Fragment() {
             productsAdapter.updateList(list)
         }
         viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            binding.productsRecyclerView.visibility = if (isLoading) View.GONE else View.VISIBLE
+            productsAdapter.setLoadingEnabled(isLoading)
         }
         viewModel.error.observe(viewLifecycleOwner) { err ->
             err?.let { Log.e("SearchProduct", "API error: $it") }
@@ -108,18 +108,30 @@ class SearchProductFragment : Fragment() {
             .setTitle(product.productName ?: product.code)
             .setView(input)
             .setPositiveButton(R.string.ok) { _, _ ->
+                Log.d("SearchProduct", "OK clicked, product=$product")
                 val weight = input.text.toString().toFloatOrNull() ?: 0f
+                Log.d("SearchProduct", "Parsed weight=$weight")
+                // Tworzymy gotowy Ingredient
+                val newIng = Ingredient(
+                    name            = product.productName.orEmpty(),
+                    weight          = weight,
+                    caloriesPer100g = product.nutriments?.energyKcal100g  ?: 0f,
+                    carbsPer100g    = product.nutriments?.carbohydrates100g ?: 0f,
+                    proteinPer100g  = product.nutriments?.proteins100g     ?: 0f,
+                    fatPer100g      = product.nutriments?.fat100g          ?: 0f
+                )
+                Log.d("SearchProduct", "New Ingredient: $newIng")
+                // Wrzucamy pod jednym kluczem
                 findNavController().previousBackStackEntry
                     ?.savedStateHandle
-                    ?.set("selectedProduct", product)
-                findNavController().previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.set("selectedWeight", weight)
+                    ?.set("newIngredient", newIng)
+                Log.d("SearchProduct", "Saved to stateHandle, popping")
                 findNavController().popBackStack()
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

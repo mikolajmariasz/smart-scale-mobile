@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.meals
+package com.example.smartscale.ui.meals.mealList.viewModel
 
 import android.app.Application
 import androidx.lifecycle.*

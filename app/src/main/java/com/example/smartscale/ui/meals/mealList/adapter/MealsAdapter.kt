@@ -1,4 +1,4 @@
-package com.example.smartscale.ui.meals.presentation.adapter
+package com.example.smartscale.ui.meals.mealList.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +11,8 @@ import com.example.smartscale.domain.model.Meal
 
 class MealsAdapter(
     private var meals: List<Meal>,
-    private val onAddMealClick: () -> Unit
+    private val onAddMealClick: () -> Unit,
+    private val onMealClick: (Meal) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private companion object {
@@ -58,6 +59,9 @@ class MealsAdapter(
                 holder.mealCarbs.text    = String.format("%.1f", meal.carbs)
                 holder.mealProtein.text  = String.format("%.1f", meal.protein)
                 holder.mealFat.text      = String.format("%.1f", meal.fat)
+                holder.itemView.setOnClickListener {
+                    onMealClick(meal)
+                }
             }
             is AddMealViewHolder -> {
                 holder.addButton.setOnClickListener {

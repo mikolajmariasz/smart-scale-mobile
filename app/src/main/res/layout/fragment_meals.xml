@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.meals.presentation.fragment.MealsFragment"
+    tools:context=".ui.meals.mealList.view.MealsFragment"
     android:paddingBottom="56dp">
 
     <!-- Header with date and calendar icon -->
@@ -15,7 +15,7 @@
         android:layout_height="wrap_content" />
 
     <!--- Circular progress bar -->
-    <com.example.smartscale.ui.meals.presentation.view.CircularProgressBar
+    <com.example.smartscale.ui.common.view.CircularProgressBar
         android:id="@+id/circularProgressBar"
         android:layout_width="300dp"
         android:layout_height="300dp"
@@ -25,7 +25,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!--- NutritionBarView -->
-    <com.example.smartscale.ui.meals.presentation.view.NutritionBarView
+    <com.example.smartscale.ui.common.view.NutritionBarView
         android:id="@+id/nutritionBarsView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
