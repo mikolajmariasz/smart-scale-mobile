@@ -23,15 +23,9 @@ import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetSocketAddress
 
-/**
- * Data structure for a single product entry received from Raspberry Pi.
- */
 data class ProductData(val barcode: String, val weight: Float)
 
-/**
- * Foreground service that listens for UDP packets on port 8000 and creates
- * new meals with the received ingredients.
- */
+
 class ServerService : Service() {
 
     private val channelId = "udp_channel"
@@ -47,7 +41,7 @@ class ServerService : Service() {
         showForegroundNotification()
         database = AppDatabase.getInstance(applicationContext)
         enableMulticast()
-        Log.d("UDP", "✅ ServerService.onCreate()")
+        Log.d("UDP", "ServerService.onCreate()")
         startUdpReceiver()
     }
 
@@ -62,18 +56,18 @@ class ServerService : Service() {
                 }
                 val buffer = ByteArray(4096)
 
-                Log.d("UDP", "🟢 Listening for UDP data on port 8000...")
+                Log.d("UDP", "Listening for UDP data on port 8000...")
 
                 while (!Thread.currentThread().isInterrupted) {
                     val packet = DatagramPacket(buffer, buffer.size)
                     socket.receive(packet)
                     val message = String(packet.data, 0, packet.length)
-                    Log.d("UDP", "✅ Received: $message")
+                    Log.d("UDP", "Received: $message")
                     handleReceivedMessage(message)
                 }
 
             } catch (e: Exception) {
-                Log.e("UDP", "❌ UDP error: ${e.message}", e)
+                Log.e("UDP", "UDP error: ${e.message}", e)
             }
         }.start()
     }
@@ -100,7 +94,7 @@ class ServerService : Service() {
             }
 
             if (products.isEmpty()) {
-                Log.w("UDP", "⚠ No valid data in message: $message")
+                Log.w("UDP", "No valid data in message: $message")
                 return
             }
 
@@ -113,7 +107,7 @@ class ServerService : Service() {
                         val mealId = java.util.UUID.randomUUID().toString()
                         val meal = MealEntity(
                             localId = mealId,
-                            name = "Automatyczny posiłek",
+                            name = "Meal from scale",
                             emoji = "🍽",
                             dateTime = System.currentTimeMillis()
                         )
@@ -123,7 +117,7 @@ class ServerService : Service() {
                             val product = api.getProductByCode(pd.barcode).body()?.product
                             val entity = IngredientEntity(
                                 mealLocalId = mealId,
-                                name = product?.productName ?: "Nieznany produkt",
+                                name = product?.productName ?: "Unknown product",
                                 weight = pd.weight,
                                 caloriesPer100g = product?.nutriments?.energyKcal100g ?: 0f,
                                 carbsPer100g = product?.nutriments?.carbohydrates100g ?: 0f,
@@ -135,15 +129,15 @@ class ServerService : Service() {
                         }
                     }
 
-                    updateForegroundNotification("Dodano posiłek • ${products.size} składników")
+                    updateForegroundNotification("Added meal • ${products.size} ingredients")
 
                 } catch (e: Exception) {
-                    Log.e("UDP", "❌ Error inside coroutine: ${e.message}", e)
+                    Log.e("UDP", "Error inside coroutine: ${e.message}", e)
                 }
             }
 
         } catch (e: Exception) {
-            Log.e("UDP", "❌ Error parsing message: ${e.message}", e)
+            Log.e("UDP", "Error parsing message: ${e.message}", e)
         }
     }
 
@@ -153,7 +147,7 @@ class ServerService : Service() {
             setReferenceCounted(true)
             acquire()
         }
-        Log.d("UDP", "✅ MulticastLock acquired")
+        Log.d("UDP", "MulticastLock acquired")
     }
 
     private fun showForegroundNotification() {
@@ -167,8 +161,8 @@ class ServerService : Service() {
         }
 
         val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Waga: nasłuchiwanie UDP")
-            .setContentText("Oczekuję danych z Raspberry Pi")
+            .setContentTitle("Scale Device")
+            .setContentText("Waiting for data from device...")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .build()
 
@@ -177,7 +171,7 @@ class ServerService : Service() {
 
     private fun updateForegroundNotification(contentText: String) {
         val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Waga: nasłuchiwanie UDP")
+            .setContentTitle("Scale Device")
             .setContentText(contentText)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .build()
