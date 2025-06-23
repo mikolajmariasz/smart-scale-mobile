@@ -19,6 +19,8 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:scaleType="centerCrop"
+            android:background="@drawable/rounded_image"
+            android:clipToOutline="true"
             android:contentDescription="@string/product_image" />
 
         <LinearLayout
