@@ -13,9 +13,9 @@ This is an Android application university project for managing meals using a cus
 ## Screenshots
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/7a7b6d61-bdd9-4b70-9dc2-df2dd5978c1a" width="300" />
-  <img src="https://github.com/user-attachments/assets/2de044f8-998f-4490-8612-e8b7f3e6d09b" width="300" />
-  <img src="https://github.com/user-attachments/assets/d7e45596-2c0f-46a7-aebc-26afed1fa945" width="300" />
+  <img src="https://github.com/user-attachments/assets/7a7b6d61-bdd9-4b70-9dc2-df2dd5978c1a" width="200" />
+  <img src="https://github.com/user-attachments/assets/2de044f8-998f-4490-8612-e8b7f3e6d09b" width="200" />
+  <img src="https://github.com/user-attachments/assets/d7e45596-2c0f-46a7-aebc-26afed1fa945" width="200" />
 </p>
 
 ## Libraries Used
